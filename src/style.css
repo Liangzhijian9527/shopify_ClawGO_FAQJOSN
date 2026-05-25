@@ -1752,6 +1752,25 @@ label {
   padding-left: 18px;
 }
 
+.clawgo-preview-stage .steps-template9 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 50px 20px;
+}
+
+.clawgo-preview-stage .steps-template9-image {
+  display: block;
+  width: auto;
+  height: 488px;
+  max-width: 100%;
+  object-fit: cover;
+  margin-bottom: 6px;
+}
+
+.clawgo-preview-stage .steps-template9-content {
+  padding-left: 18px;
+}
+
 .clawgo-preview-stage .main-faq-troubleshooting-table {
   color: #fff;
 }
@@ -1881,7 +1900,6 @@ label {
 .clawgo-preview-stage .main-faq-answerTemplate8__media {
   width: 240px;
   overflow: hidden;
-  border: 3px solid #08a4ff;
   border-radius: 12px;
   background: #000;
   line-height: 0;
@@ -2061,6 +2079,28 @@ label {
 
   .clawgo-preview-stage .steps-template1-image,
   .clawgo-preview-stage .steps-template1-step:last-child .steps-template1-image {
+    display: block;
+    width: auto;
+    height: 300px;
+    margin: auto;
+  }
+
+  .clawgo-preview-stage .steps-template9 {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .clawgo-preview-stage .steps-template9-step {
+    width: 100%;
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+  }
+
+  .clawgo-preview-stage .steps-template9-image {
     display: block;
     width: auto;
     height: 300px;

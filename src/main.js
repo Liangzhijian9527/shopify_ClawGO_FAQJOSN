@@ -16,6 +16,7 @@ const ANSWER_TEMPLATES = {
   template6: "template6 - 排错表格",
   template7: "template7 - 四角边框提示框",
   template8: "template8 - 图文并排提示",
+  template9: "template9 - 均高图片教程网格",
 };
 
 let appMode = "single";
@@ -215,6 +216,12 @@ function defaultAnswer(answerTemplate = "template1") {
     };
   }
   if (answerTemplate === "template5") {
+    return {
+      answerTemplate,
+      stepList: [{ image: "", content: "<p>Describe this screenshot.</p>" }],
+    };
+  }
+  if (answerTemplate === "template9") {
     return {
       answerTemplate,
       stepList: [{ image: "", content: "<p>Describe this screenshot.</p>" }],
@@ -687,7 +694,7 @@ function renderAnswerFieldsFor(answer, onPatch, getAnswer, collapsePrefix = "ans
     body.append(renderStepListFor(getAnswer(), "desc", true, collapsePrefix));
   }
 
-  if (answer.answerTemplate === "template5") {
+  if (answer.answerTemplate === "template5" || answer.answerTemplate === "template9") {
     body.append(renderStepListFor(getAnswer(), "content", true, collapsePrefix));
   }
 
@@ -1163,6 +1170,21 @@ function renderAnswerPreview(answer) {
     wrapper.append(grid);
   }
 
+  if (answer.answerTemplate === "template9") {
+    const grid = document.createElement("div");
+    grid.className = "steps-template9";
+    (answer.stepList || []).forEach(step => {
+      const card = document.createElement("div");
+      card.className = "steps-template9-step";
+      card.innerHTML = `
+        ${imageBoxHtml(step.image, "steps-template9-image")}
+        <div class="steps-template9-content">${step.content || ""}</div>
+      `;
+      grid.append(card);
+    });
+    wrapper.append(grid);
+  }
+
   if (answer.answerTemplate === "template6") {
     wrapper.append(renderTablePreview(answer));
   }
@@ -1327,7 +1349,7 @@ function cleanAnswer(answer) {
     if (supportsWrapperFields && answer.content?.trim()) result.content = compactHtmlForJson(answer.content);
     result.stepList = cleanStepList(answer.stepList, "desc");
   }
-  if (answer.answerTemplate === "template5") {
+  if (answer.answerTemplate === "template5" || answer.answerTemplate === "template9") {
     result.stepList = cleanStepList(answer.stepList, "content");
   }
   if (answer.answerTemplate === "template6") {
@@ -1470,7 +1492,10 @@ function normalizeImportedAnswer(answer) {
   const normalized = defaultAnswer(template);
   Object.assign(normalized, answer, { answerTemplate: template });
   if (template === "template3") normalized.stepsPerRow = Number(answer.stepsPerRow) === 3 ? 3 : 4;
-  if ((template === "template3" || template === "template4" || template === "template5") && !Array.isArray(normalized.stepList)) {
+  if (
+    (template === "template3" || template === "template4" || template === "template5" || template === "template9") &&
+    !Array.isArray(normalized.stepList)
+  ) {
     normalized.stepList = [];
   }
   if (template === "template6") {
