@@ -170,7 +170,7 @@ label {
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(430px, 0.9fr) minmax(470px, 1.1fr);
+  grid-template-columns: minmax(360px, 4fr) minmax(520px, 6fr);
   gap: 16px;
   flex: 1;
   min-height: 0;
