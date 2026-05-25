@@ -509,15 +509,27 @@ label {
 }
 
 .ulTemplate,
-.ulTemplate1 {
+.ulTemplate1,
+.ulTemplate3,
+.ulTemplate4 {
   margin: 0 0 14px;
   padding-left: 22px;
 }
 
-.ulTemplate1 {
+.ulTemplate1,
+.ulTemplate3,
+.ulTemplate4 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 6px 20px;
+}
+
+.ulTemplate3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ulTemplate4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .steps-grid {
@@ -909,20 +921,26 @@ label {
 }
 
 .clawgo-preview-stage .ulTemplate,
-.clawgo-preview-stage .ulTemplate1 {
+.clawgo-preview-stage .ulTemplate1,
+.clawgo-preview-stage .ulTemplate3,
+.clawgo-preview-stage .ulTemplate4 {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 .clawgo-preview-stage .ulTemplate li,
-.clawgo-preview-stage .ulTemplate1 li {
+.clawgo-preview-stage .ulTemplate1 li,
+.clawgo-preview-stage .ulTemplate3 li,
+.clawgo-preview-stage .ulTemplate4 li {
   position: relative;
   padding-left: 24px;
 }
 
 .clawgo-preview-stage .ulTemplate li::before,
-.clawgo-preview-stage .ulTemplate1 li::before {
+.clawgo-preview-stage .ulTemplate1 li::before,
+.clawgo-preview-stage .ulTemplate3 li::before,
+.clawgo-preview-stage .ulTemplate4 li::before {
   content: "";
   position: absolute;
   top: 10px;
@@ -933,10 +951,20 @@ label {
   background: #5ec9c5;
 }
 
-.clawgo-preview-stage .ulTemplate1 {
+.clawgo-preview-stage .ulTemplate1,
+.clawgo-preview-stage .ulTemplate3,
+.clawgo-preview-stage .ulTemplate4 {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px 28px;
+}
+
+.clawgo-preview-stage .ulTemplate3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.clawgo-preview-stage .ulTemplate4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .clawgo-preview-stage .lineTemplate {
@@ -1391,7 +1419,9 @@ label {
   .clawgo-preview-stage .steps-grid.cols-3,
   .clawgo-preview-stage .steps-grid.cols-4,
   .clawgo-preview-stage .tutorial-grid,
-  .clawgo-preview-stage .ulTemplate1 {
+  .clawgo-preview-stage .ulTemplate1,
+  .clawgo-preview-stage .ulTemplate3,
+  .clawgo-preview-stage .ulTemplate4 {
     grid-template-columns: 1fr;
   }
 
