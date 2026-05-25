@@ -15,6 +15,7 @@ const ANSWER_TEMPLATES = {
   template5: "template5 - 静态图片教程网格",
   template6: "template6 - 排错表格",
   template7: "template7 - 四角边框提示框",
+  template8: "template8 - 图文并排提示",
 };
 
 let appMode = "single";
@@ -224,6 +225,15 @@ function defaultAnswer(answerTemplate = "template1") {
       answerTemplate,
       headers: ["Problem", "Cause", "Solution"],
       rows: [{ problem: "Problem", cause: "Cause", solution: "Solution" }],
+    };
+  }
+  if (answerTemplate === "template8") {
+    return {
+      answerTemplate,
+      content:
+        "<p class='marginBottom32'><strong>Do This In Your ClawGo Chat:</strong></p><ul class='ulTemplate'><li class='marginBottom16'>Tell ClawGo: &quot;Connect WhatsApp&quot;</li><li class='marginBottom16'>ClawGo Will Generate A WhatsApp Linking QR Code.</li><li class='marginBottom16'>What You Should See: The QR Code Should Appear As An Actual Image In The Chat.</li></ul><p><strong>If You Don’t See The QR Code Sent By ClawGo, Feel Free To Give It A Little Push — Just Ask ClawGo To Send A Fresh One!</strong></p>",
+      image: "",
+      imageAlt: "ClawGo chat QR code",
     };
   }
   return {
@@ -649,6 +659,14 @@ function renderAnswerFieldsFor(answer, onPatch, getAnswer, collapsePrefix = "ans
 
   if (answer.answerTemplate === "template1" || answer.answerTemplate === "template7") {
     body.append(textareaField("HTML 内容", answer.content, value => onPatch({ content: value }), { formatHtml: true }));
+  }
+
+  if (answer.answerTemplate === "template8") {
+    body.append(
+      textareaField("HTML 内容 content", answer.content || "", value => onPatch({ content: value }), { formatHtml: true }),
+      inputField("图片 URL image", answer.image || "", value => onPatch({ image: value })),
+      inputField("图片描述 imageAlt", answer.imageAlt || "", value => onPatch({ imageAlt: value }))
+    );
   }
 
   if (answer.answerTemplate === "template3") {
@@ -1161,6 +1179,21 @@ function renderAnswerPreview(answer) {
     `;
   }
 
+  if (answer.answerTemplate === "template8") {
+    wrapper.innerHTML = `
+      <div class="main-faq-answerTemplate8">
+        <div class="main-faq-answerTemplate8__content">
+          <div class="main-faq-answerTemplate8__text">${answer.content || ""}</div>
+        </div>
+        ${
+          answer.image
+            ? `<div class="main-faq-answerTemplate8__media"><img class="main-faq-answerTemplate8__image" src="${escapeAttr(answer.image)}" alt="${escapeAttr(answer.imageAlt || "")}" /></div>`
+            : ""
+        }
+      </div>
+    `;
+  }
+
   return wrapper;
 }
 
@@ -1277,6 +1310,12 @@ function cleanAnswer(answer) {
   if (answer.answerTemplate === "template1" || answer.answerTemplate === "template7") {
     if (!answer.content?.trim()) return null;
     result.content = compactHtmlForJson(answer.content);
+  }
+  if (answer.answerTemplate === "template8") {
+    if (answer.content?.trim()) result.content = compactHtmlForJson(answer.content);
+    if (answer.image?.trim()) result.image = answer.image.trim();
+    if (answer.imageAlt?.trim()) result.imageAlt = answer.imageAlt.trim();
+    if (!result.content && !result.image) return null;
   }
   if (answer.answerTemplate === "template3") {
     result.stepsPerRow = Number(answer.stepsPerRow) === 3 ? 3 : 4;
