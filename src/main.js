@@ -300,25 +300,22 @@ function renderFaqForm() {
         FAQ 标题 title
         <input data-faq-title value="${escapeAttr(multiState.title || "")}" />
       </label>
-      <label class="full">
-        headerContent
-        <textarea data-faq-header spellcheck="false">${escapeHtml(multiState.headerContent || "")}</textarea>
-      </label>
     </div>
     <div class="question-list"></div>
   `;
+
+  const formGrid = section.querySelector(".form-grid");
+  const headerField = textareaField("headerContent", multiState.headerContent || "", value => {
+    multiState.headerContent = value;
+    refreshSide();
+  }, { formatHtml: true });
+  headerField.classList.add("full");
+  formGrid.append(headerField);
 
   section.querySelector("[data-faq-title]").addEventListener("input", event => {
     multiState.title = event.target.value;
     refreshSide();
   });
-  const headerTextarea = section.querySelector("[data-faq-header]");
-  headerTextarea.addEventListener("input", event => {
-    multiState.headerContent = event.target.value;
-    autoResizeTextarea(headerTextarea);
-    refreshSide();
-  });
-  requestAnimationFrame(() => autoResizeTextarea(headerTextarea));
   section.querySelector("[data-add-question]").addEventListener("click", () => {
     multiState.questions.push(createInitialState());
     selectedQuestionIndex = multiState.questions.length - 1;
@@ -906,7 +903,7 @@ function renderFaqPreview() {
   body.className = "clawgo-preview-stage main-faq-list-section";
   const header = document.createElement("div");
   header.className = "header-content";
-  header.innerHTML = `<h1 class="title">${escapeHtml(multiState.title || "FAQ Title")}</h1>${multiState.headerContent || ""}`;
+  header.innerHTML = `<h1 class="title">${escapeHtml(multiState.title || "FAQ Title")}</h1>${normalizeHtmlForPreview(multiState.headerContent)}`;
   const list = document.createElement("div");
   list.className = "main-support-configurable__faq";
 
@@ -1765,6 +1762,13 @@ function compactHtmlForJson(source) {
     .replace(/>\s+</g, "><")
     .replace(/\s*\n+\s*/g, " ")
     .replace(/\s{2,}/g, " ");
+}
+
+function normalizeHtmlForPreview(source) {
+  return String(source || "")
+    .trim()
+    .replace(/\\"/g, '"')
+    .replace(/\\'/g, "'");
 }
 
 function validateHtmlTags(source) {
