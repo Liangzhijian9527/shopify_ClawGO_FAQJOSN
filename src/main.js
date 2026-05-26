@@ -1525,6 +1525,9 @@ function normalizeImportedAnswer(answer) {
   const template = ANSWER_TEMPLATES[answer.answerTemplate] ? answer.answerTemplate : "template1";
   const normalized = defaultAnswer(template);
   Object.assign(normalized, answer, { answerTemplate: template });
+  if (template === "template4" && !Object.prototype.hasOwnProperty.call(answer, "title")) {
+    delete normalized.title;
+  }
   if (template === "template3") normalized.stepsPerRow = Number(answer.stepsPerRow) === 3 ? 3 : 4;
   if (template === "template9") normalized.stepsPerRow = Number(answer.stepsPerRow) === 3 ? 3 : 2;
   if (
