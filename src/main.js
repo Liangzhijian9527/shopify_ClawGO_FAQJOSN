@@ -224,7 +224,8 @@ function defaultAnswer(answerTemplate = "template1") {
   if (answerTemplate === "template9") {
     return {
       answerTemplate,
-      stepList: [{ image: "", content: "<p>Describe this screenshot.</p>" }],
+      stepsPerRow: 2,
+      stepList: [{ image: "", headerContent: "<p>Step title</p>", content: "<p>Describe this screenshot.</p>" }],
     };
   }
   if (answerTemplate === "template6") {
@@ -694,8 +695,15 @@ function renderAnswerFieldsFor(answer, onPatch, getAnswer, collapsePrefix = "ans
     body.append(renderStepListFor(getAnswer(), "desc", true, collapsePrefix));
   }
 
-  if (answer.answerTemplate === "template5" || answer.answerTemplate === "template9") {
+  if (answer.answerTemplate === "template5") {
     body.append(renderStepListFor(getAnswer(), "content", true, collapsePrefix));
+  }
+
+  if (answer.answerTemplate === "template9") {
+    const select = fieldWrapper("stepsPerRow", createSelect(["2", "3"], String(answer.stepsPerRow || 2), value =>
+      onPatch({ stepsPerRow: Number(value) })
+    ));
+    body.append(select, renderStepListFor(getAnswer(), "content", true, collapsePrefix));
   }
 
   if (answer.answerTemplate === "template6") {
@@ -717,7 +725,9 @@ function renderStepListFor(answer, textKey, htmlText = false, collapsePrefix = "
 
   wrapper.querySelector("[data-add-step]").addEventListener("click", () => {
     answer.stepList = answer.stepList || [];
-    answer.stepList.push({ image: "", [textKey]: htmlText ? "<p>Describe this step.</p>" : "Describe this step." });
+    const newStep = { image: "", [textKey]: htmlText ? "<p>Describe this step.</p>" : "Describe this step." };
+    if (answer.answerTemplate === "template9") newStep.headerContent = "<p>Step title</p>";
+    answer.stepList.push(newStep);
     render();
   });
 
@@ -747,6 +757,14 @@ function renderStepListFor(answer, textKey, htmlText = false, collapsePrefix = "
         step.image = value;
         refreshSide();
       }),
+      ...(answer.answerTemplate === "template9"
+        ? [
+            textareaField("图片上方 HTML headerContent", step.headerContent || "", value => {
+              step.headerContent = value;
+              refreshSide();
+            }, { formatHtml: true }),
+          ]
+        : []),
       textareaField(textKey === "content" ? "HTML 说明 content" : "说明 desc", step[textKey] || "", value => {
         step[textKey] = value;
         refreshSide();
@@ -1171,12 +1189,14 @@ function renderAnswerPreview(answer) {
   }
 
   if (answer.answerTemplate === "template9") {
+    const columns = Number(answer.stepsPerRow) === 3 ? 3 : 2;
     const grid = document.createElement("div");
-    grid.className = "steps-template9";
+    grid.className = `steps-template9 steps-template9--columns-${columns}`;
     (answer.stepList || []).forEach(step => {
       const card = document.createElement("div");
       card.className = "steps-template9-step";
       card.innerHTML = `
+        <div class="steps-template9-content">${step.headerContent || ""}</div>
         ${imageBoxHtml(step.image, "steps-template9-image")}
         <div class="steps-template9-content">${step.content || ""}</div>
       `;
@@ -1349,8 +1369,12 @@ function cleanAnswer(answer) {
     if (supportsWrapperFields && answer.content?.trim()) result.content = compactHtmlForJson(answer.content);
     result.stepList = cleanStepList(answer.stepList, "desc");
   }
-  if (answer.answerTemplate === "template5" || answer.answerTemplate === "template9") {
+  if (answer.answerTemplate === "template5") {
     result.stepList = cleanStepList(answer.stepList, "content");
+  }
+  if (answer.answerTemplate === "template9") {
+    result.stepsPerRow = Number(answer.stepsPerRow) === 3 ? 3 : 2;
+    result.stepList = cleanTemplate9StepList(answer.stepList);
   }
   if (answer.answerTemplate === "template6") {
     result.headers = answer.headers?.length ? answer.headers : ["Problem", "Cause", "Solution"];
@@ -1370,6 +1394,16 @@ function cleanStepList(stepList = [], textKey) {
       [textKey]: compactHtmlForJson(step[textKey] || ""),
     }))
     .filter(step => step.image.trim() || String(step[textKey]).trim());
+}
+
+function cleanTemplate9StepList(stepList = []) {
+  return stepList
+    .map(step => ({
+      image: step.image || "",
+      ...(step.headerContent?.trim() ? { headerContent: compactHtmlForJson(step.headerContent) } : {}),
+      content: compactHtmlForJson(step.content || ""),
+    }))
+    .filter(step => step.image.trim() || step.headerContent || step.content.trim());
 }
 
 function updateOutput(showStatus = true) {
@@ -1492,6 +1526,7 @@ function normalizeImportedAnswer(answer) {
   const normalized = defaultAnswer(template);
   Object.assign(normalized, answer, { answerTemplate: template });
   if (template === "template3") normalized.stepsPerRow = Number(answer.stepsPerRow) === 3 ? 3 : 4;
+  if (template === "template9") normalized.stepsPerRow = Number(answer.stepsPerRow) === 3 ? 3 : 2;
   if (
     (template === "template3" || template === "template4" || template === "template5" || template === "template9") &&
     !Array.isArray(normalized.stepList)

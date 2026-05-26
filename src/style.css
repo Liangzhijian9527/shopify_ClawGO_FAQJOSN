@@ -1754,8 +1754,16 @@ label {
 
 .clawgo-preview-stage .steps-template9 {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(var(--steps-template9-columns), minmax(0, 1fr));
   gap: 50px 20px;
+}
+
+.clawgo-preview-stage .steps-template9--columns-2 {
+  --steps-template9-columns: 2;
+}
+
+.clawgo-preview-stage .steps-template9--columns-3 {
+  --steps-template9-columns: 3;
 }
 
 .clawgo-preview-stage .steps-template9-image {
