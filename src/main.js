@@ -19,6 +19,25 @@ const ANSWER_TEMPLATES = {
   template9: "template9 - 均高图片教程网格",
 };
 
+const QUESTION_TEMPLATE_GUIDES = {
+  template1: "普通折叠 FAQ。填写 answers[] 后点击标题展开；如果填写 link，则作为 FAQ 分类跳转入口，不渲染答案内容。",
+  template3: "静态说明卡片。展示 title 和每个 answer.content，不参与折叠交互，适合章节说明或提示。",
+  template4: "静态标题块。只输出 question.title，适合在 FAQ 列表中做分组标题或步骤段落标题。",
+  template5: "旧版步骤手风琴。使用扁平 answers[]，第一个 answerTemplate4 进入主面板，后续 answerTemplate4 变成独立步骤卡片。",
+  template6: "新版分组步骤手风琴。使用 answers[].contents[]，第一组进入主面板，第二组及之后显示为 3a/3b 这类独立子步骤。",
+};
+
+const ANSWER_TEMPLATE_GUIDES = {
+  template1: "普通 HTML 内容。可直接写 <p>、<ul>、链接和 FAQ_USAGE.md 中列出的 margin/list class。",
+  template3: "步骤图片列表。需要 stepList[].image 和 stepList[].desc；stepsPerRow 只支持 3 或 4。",
+  template4: "图片步骤切换器。需要 stepList[].image 和 stepList[].desc；在步骤手风琴里还可以填写外层 title/content。",
+  template5: "静态图片教程网格。需要 stepList[].image 和 stepList[].content，适合多张截图固定展示。",
+  template6: "排错/对比表格。可用 headers + rows[].columns，也可用默认 problem/cause/solution 三列。",
+  template7: "四角边框提示框。填写 content，适合提示词模板、示例或重点提醒。",
+  template8: "图文并排提示组件。填写 content、image、imageAlt，桌面左文右图，移动端上下排列。",
+  template9: "等高截图网格。可填 headerContent、image、content；stepsPerRow 只支持 2 或 3。",
+};
+
 let appMode = "single";
 let state = createInitialState();
 let multiState = createFaqSampleState();
@@ -421,6 +440,10 @@ function renderQuestionForm() {
   const section = document.createElement("section");
   section.className = "form-grid";
   section.innerHTML = `
+    <div class="template-guide full">
+      <strong>当前 Question 模板</strong>
+      <span>${escapeHtml(QUESTION_TEMPLATE_GUIDES[state.questionTemplate] || "暂无说明。")}</span>
+    </div>
     <label>
       问题模板
       <select data-field="questionTemplate">
@@ -664,6 +687,7 @@ function renderAnswerFields(answer, answerIndex) {
 function renderAnswerFieldsFor(answer, onPatch, getAnswer, collapsePrefix = "answer") {
   const body = document.createElement("div");
   body.className = "answer-card-body";
+  body.append(templateGuide("当前 Answer 模板", ANSWER_TEMPLATE_GUIDES[answer.answerTemplate]));
 
   if (answer.answerTemplate === "template1" || answer.answerTemplate === "template7") {
     body.append(textareaField("HTML 内容", answer.content, value => onPatch({ content: value }), { formatHtml: true }));
@@ -1930,6 +1954,13 @@ function optionsHtml(options, selected) {
   return Object.entries(options)
     .map(([value, label]) => `<option value="${value}" ${value === selected ? "selected" : ""}>${label}</option>`)
     .join("");
+}
+
+function templateGuide(title, text) {
+  const guide = document.createElement("div");
+  guide.className = "template-guide";
+  guide.innerHTML = `<strong>${escapeHtml(title)}</strong><span>${escapeHtml(text || "暂无说明。")}</span>`;
+  return guide;
 }
 
 function imageBoxHtml(src, imageClass = "") {

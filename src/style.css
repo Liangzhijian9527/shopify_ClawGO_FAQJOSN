@@ -218,6 +218,27 @@ label {
   gap: 12px;
 }
 
+.template-guide {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border: 1px solid #f3b9b8;
+  border-radius: 6px;
+  background: #fff5f5;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.template-guide strong {
+  color: var(--brand-dark);
+}
+
+.template-guide span {
+  color: #5b667a;
+}
+
 .full {
   grid-column: 1 / -1;
 }
